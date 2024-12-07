@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const Book = require('../models/book.model')
+const { Book } = require('../models/book.model')
 
 // MIDDLEWARE
 const getBook = async(req, res, next) => {
@@ -10,14 +10,14 @@ const getBook = async(req, res, next) => {
 	if (!id.match(/^[0-9a-fA-F]{24}$/)){
 		return res.status(404).json(
 			{
-				message: 'El ID del libro no es valido'
+				message: 'ID book not found'
 			}
 		)
 	}
 	try {
 		book = await Book.findById(id)
 		if(!book) {
-			return res.status(404).json({message: 'El libro no fue encontrado'})
+			return res.status(404).json({message: 'Book not found'})
 		}
 	} catch (error) {
 		return res.status(500).json({message: error.message})
@@ -26,7 +26,7 @@ const getBook = async(req, res, next) => {
 	next()
 }
 
-// obtener todos los libros
+// get all books
 router.get('/', async(req, res) => {
 	try {
 		const books = await Book.find()
@@ -40,21 +40,21 @@ router.get('/', async(req, res) => {
 	}
 })
 
-// Crear un nuevo libro (recurso)
+// create a book
 router.post('/', async(req, res) => {
-	const {title, author, genero, publication_date} = req?.body
-	if(!title || !author || !genero || !publication_date){
+	const {title, genre, publication_date, author} = req?.body
+	if(!title || !genre || !publication_date || !author){
 		return res.status(400).json({
-			message: "Todos los campos son obligatorios"
+			message: "All fields required"
 		})
 	}
 
 	const book = new Book(
 		{
 			title,
-			author,
-			genero,
-			publication_date
+			genre,
+			publication_date,
+			author
 		}
 	)
 
@@ -79,7 +79,7 @@ router.put("/:id", getBook, async(req, res) => {
 		const book = res.book
 		book.title = req.body.title || book.title;
 		book.author = req.body.author || book.author;
-		book.genero = req.body.genero || book.genero;
+		book.genre = req.body.genre || book.genre;
 		book.publication_date = req.body.publication_date || book.publication_date;
 
 		const updateBook = await book.save()
@@ -91,14 +91,14 @@ router.put("/:id", getBook, async(req, res) => {
 
 // update partial one
 router.patch("/:id", getBook, async(req, res) => {
-	if(!req.body.title && !req.body.author && !req.body.genero && !req.body.publication_date){
-		res.status(400).json({message: 'Al menos un campo debe ser enviado'})
+	if(!req.body.title && !req.body.author && !req.body.genre && !req.body.publication_date){
+		res.status(400).json({message: 'Data not send'})
 	}
 	try {
 		const book = res.book
 		book.title = req.body.title || book.title;
 		book.author = req.body.author || book.author;
-		book.genero = req.body.genero || book.genero;
+		book.genre = req.body.genre || book.genre;
 		book.publication_date = req.body.publication_date || book.publication_date;
 
 		const updateBook = await book.save()
@@ -115,7 +115,7 @@ router.delete('/:id', getBook, async(req, res) => {
 		await book.deleteOne({
 			_id: book._id
 		});
-		res.json({message: `El libro ${book.title} se elimino correctamente`})
+		res.json({message: `The book ${book.title} eliminated correctly`})
 	} catch(error){
 		res.status(500).json({message: error.message})
 	}
