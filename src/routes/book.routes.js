@@ -26,7 +26,7 @@ const getBook = async(req, res, next) => {
 	next()
 }
 
-// obtener todos los libros
+// get all books
 router.get('/', async(req, res) => {
 	try {
 		const books = await Book.find()
@@ -40,14 +40,10 @@ router.get('/', async(req, res) => {
 	}
 })
 
-// Crear un nuevo libro (recurso)
+// create a book
 router.post('/', async(req, res) => {
 	const {title, genre, publication_date, author} = req?.body
 	if(!title || !genre || !publication_date || !author){
-		console.log(title)
-		console.log(genre)
-		console.log(publication_date)
-		console.log(author)
 		return res.status(400).json({
 			message: "All fields required"
 		})

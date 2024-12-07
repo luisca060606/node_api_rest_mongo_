@@ -11,34 +11,13 @@ const {
 	renderEditForm,
 	updateAuthor,
 	deleteAuthor
-} = require('../controllers/author.controller')
+} = require('../controllers/author.controller');
+const getObject = require('../middleware/middleware_objects');
+const verifyToken = require('../middleware/middleware_auth');
 
-// MIDDLEWARE
-const getAuthor = async(req, res, next) => {
-	let author;
-	const { id } = req.params;
-
-	if (!id.match(/^[0-9a-fA-F]{24}$/)){
-		return res.status(404).json(
-			{
-				message: 'ID Author not exist'
-			}
-		)
-	}
-	try {
-		author = await Author.findById(id)
-		if(!author) {
-			return res.status(404).json({message: 'Author not found'})
-		}
-	} catch (error) {
-		return res.status(500).json({message: error.message})
-	}
-	res.author = author;
-	next()
-}
-
+// init routes endpoints api
 // get all authors
-router.get('/', async(req, res) => {
+router.get('/', verifyToken, async(req, res) => {
 	try {
 		const authors = await Author.find()
 		console.log('GET ALL', authors)
@@ -52,7 +31,7 @@ router.get('/', async(req, res) => {
 })
 
 // create Author
-router.post('/', async(req, res) => {
+router.post('/', verifyToken, async(req, res) => {
 	const {name} = req?.body
 	if(!name ){
 		return res.status(400).json({
@@ -78,14 +57,14 @@ router.post('/', async(req, res) => {
 })
 
 // get one author
-router.get('/:id', getAuthor, async(req, res) => {
-	res.json(res.author)
+router.get('/:id', verifyToken, getObject(Author), async(req, res) => {
+	res.json(res.object)
 })
 
 // update one author
-router.put("/:id", getAuthor, async(req, res) => {
+router.put("/:id", verifyToken, getObject(Author), async(req, res) => {
 	try {
-		const author = res.author
+		const author = res.object
 		author.name = req.body.name || author.name;
 
 		const updateAuthor = await author.save()
@@ -96,12 +75,12 @@ router.put("/:id", getAuthor, async(req, res) => {
 })
 
 // update partial one
-router.patch("/:id", getAuthor, async(req, res) => {
+router.patch("/:id", verifyToken, getObject(Author), async(req, res) => {
 	if(!req.body.name){
 		res.status(400).json({message: 'Data not send'})
 	}
 	try {
-		const author = res.author
+		const author = res.object;
 		author.name = req.body.name || author.name;
 
 		const updateAuthor = await author.save()
@@ -112,9 +91,9 @@ router.patch("/:id", getAuthor, async(req, res) => {
 })
 
 // delete one author
-router.delete('/:id', getAuthor, async(req, res) => {
+router.delete('/:id', verifyToken, getObject(Author), async(req, res) => {
 	try {
-		const author = res.author
+		const author = res.object
 		await author.deleteOne({
 			_id: author._id
 		});
@@ -123,8 +102,9 @@ router.delete('/:id', getAuthor, async(req, res) => {
 		res.status(500).json({message: error.message})
 	}
 })
+// end routes endpoints api
 
-// build routes from controller
+// build routes from controller for backendUI with template engine handlebars
 router.get('/authors/add', isAuthenticated, renderAuthorForm)
 router.post('/authors/new-author', isAuthenticated, createNewAuthor)
 router.get('/authors/all', isAuthenticated, renderAuthors)
