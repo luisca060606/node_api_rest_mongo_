@@ -20,6 +20,7 @@
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">
+        {{#if user}}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Authors
@@ -28,15 +29,17 @@
             <li><a class="dropdown-item" href="/authors/authors/all">All Authors</a></li>
             <li><a class="dropdown-item" href="/authors/authors/add">Add Author</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">LogOut</a></li>
+            <li><a class="dropdown-item" href="/users/users/logout">LogOut</a></li>
           </ul>
-        </li>        
+        </li>
+        {{else}}
         <li class="nav-item">
-          <a href="#" class="nav-link">Login</a>
+          <a href="/users/users/signin" class="nav-link">Login</a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">Register</a>
+          <a href="/users/users/signup" class="nav-link">Register</a>
         </li>        
+        {{/if}}
       </ul>
     </div>
   </div>

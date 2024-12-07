@@ -13,8 +13,10 @@ authorCtrl.createNewAuthor = async (req, res) => {
 		})
 	}
 	const author = new Author({name});
+	author.user_register = req.user.id;
 	try {
 		const newAuthor = await author.save();
+		req.flash('message', 'Author added successfully')
 		// res.status(201).json(newAuthor);
 		res.redirect('/authors/authors/all')
 	} catch(error) {
@@ -25,24 +27,30 @@ authorCtrl.createNewAuthor = async (req, res) => {
 };
 
 authorCtrl.renderAuthors = async (req, res) => {
-	const authors = await Author.find().lean()
+	const authors = await Author.find({user_register: req.user.id}).sort({createdAt: 'desc'}).lean()
 	res.render('authors/all_authors', {authors: authors});
 };
 
 authorCtrl.renderEditForm = async (req, res) => {
 	const author = await Author.findById(req.params.id).lean();
+	if (author.user_register != req.user.id) {
+		req.flash('error_msg', 'Not authorized');
+		return res.redirect('/authors/authors/all');
+	}
 	res.render('authors/edit_author', {author: author});
 };
 
 authorCtrl.updateAuthor = async (req, res) => {
 	const { name } = req.body;
 	await Author.findByIdAndUpdate(req.params.id, {name: name})
+	req.flash('message', 'Author updated successfully')
 	res.redirect('/authors/authors/all')
 };
 
 authorCtrl.deleteAuthor = async (req, res) => {
-	await Author.findByIdAndDelete(req.params.id)
-	res.redirect('/authors/authors/all')
+	await Author.findByIdAndDelete(req.params.id);
+	req.flash('message', 'Author eliminated');
+	res.redirect('/authors/authors/all');
 }
 
 module.exports = authorCtrl;

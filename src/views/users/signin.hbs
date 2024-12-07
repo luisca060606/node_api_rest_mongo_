@@ -1,0 +1,30 @@
+<div class="row">
+	<div class="col-md-4 mx-auto">
+		<div class="card">
+			<div class="card-header">
+				<span class="d-inline-block"><b>Account Login</b></span>
+				<span class="d-inline-block btn float-end">
+					<i class="fa-solid fa-user"></i>
+				</span>				
+			</div>
+			<img src="/images/logo_login.png" class=" mx-auto d-block m-4 logo">
+			<div class="card-body">
+				<form action="/users/users/signin" method="POST">
+					<div class="form-group">
+						<i class="fa-solid fa-envelope">
+						<label for="email">Email</label>
+						</i><input type="email" name="email" class="form-control", placeholder="Email">
+					</div>
+					<div class="form-group">
+						<i class="fa-solid fa-key">
+						<label for="password">Password</label>
+						</i><input type="password" name="password" class="form-control", placeholder="Password">
+					</div><br>
+					<div class="form-group d-grid gap-2">
+						<button class="btn btn-primary btn-block">SignIn</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>	
+</div>

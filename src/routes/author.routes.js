@@ -1,6 +1,7 @@
-const express = require('express')
-const router = express.Router()
-const { Author } = require('../models/book.model')
+const express = require('express');
+const router = express.Router();
+const { Author } = require('../models/book.model');
+const { isAuthenticated } = require('../helpers/auth');
 
 // import from controller
 const {
@@ -124,11 +125,11 @@ router.delete('/:id', getAuthor, async(req, res) => {
 })
 
 // build routes from controller
-router.get('/authors/add', renderAuthorForm)
-router.post('/authors/new-author', createNewAuthor)
-router.get('/authors/all', renderAuthors)
-router.get('/authors/edit/:id', renderEditForm)
-router.put('/authors/edit/:id', updateAuthor)
-router.delete('/authors/delete/:id', deleteAuthor)
+router.get('/authors/add', isAuthenticated, renderAuthorForm)
+router.post('/authors/new-author', isAuthenticated, createNewAuthor)
+router.get('/authors/all', isAuthenticated, renderAuthors)
+router.get('/authors/edit/:id', isAuthenticated, renderEditForm)
+router.put('/authors/edit/:id', isAuthenticated, updateAuthor)
+router.delete('/authors/delete/:id', isAuthenticated, deleteAuthor)
 
 module.exports = router
