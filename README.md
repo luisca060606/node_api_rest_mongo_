@@ -1,4 +1,4 @@
-# App build modules, auth and manage books API and UI Backend, ready to connect client
+# App modules, auth and manage books API and UI Backend, ready to connect client
 ## Description
 Server with db mongo on docker container, using node, express, mongoose, morgan, jsonwebtoken, passport
 ### Steps:
