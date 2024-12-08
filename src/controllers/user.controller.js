@@ -24,6 +24,10 @@ usersCtrl.signUp = async (req, res) => {
 			res.redirect('/users/users/signup');
 		} else {
 			const newuser = new User({name, email, password});
+			if (req.file) {
+				const { filename } = req.file;
+				newuser.image = await newuser.setImageUrl(filename);
+			}
 			newuser.password = await newuser.encrypPassword(password);
 			await newuser.save();
 			req.flash('message', 'User registered')
