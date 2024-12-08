@@ -60,6 +60,8 @@ app.set('view engine', '.hbs')
 // -- end config templates --
 // static files from server
 app.use(express.static(path.join(__dirname, 'public')));
+// server files virtual prefix
+app.use('/public', express.static(path.join(__dirname + '/storage/images')))
 
 // Connect db mongo
 mongoose.connect(process.env.MONGO_URL, {dbName: process.env.MONGO_DB_NAME})

@@ -1,4 +1,5 @@
 const express = require('express');
+const upload = require('../helpers/storage');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET, JWT_EXPIRES } = require('../config');
@@ -28,7 +29,7 @@ router.get('/', verifyToken, async(req, res) => {
 });
 
 // create a User
-router.post('/', async(req, res) => {
+router.post('/', verifyToken, upload.single('image'), async(req, res) => {
 	const { name, email, password, confirm_password } = req.body;
 	if(!name || !email || !password || !confirm_password){
 		return res.status(400).json({
@@ -53,6 +54,10 @@ router.post('/', async(req, res) => {
 	} else {
 		const newuser = new User({name, email, password});
 		try {
+			if (req.file) {
+				const { filename } = req.file;
+				newuser.image = await newuser.setImageUrl(filename);
+			}			
 			newuser.password = await newuser.encrypPassword(password);
 			await newuser.save();
 			res.status(200).json({isSuccess: true, message: 'User created.'})
@@ -72,6 +77,7 @@ router.get('/:id', getObject(User), async(req, res) => {
 // login api
 router.post('/login', async(req, res) => {
 	try {
+		console.log(req?.body);
 		const { email, password } = req.body;
 		if(!email || !password){
 			return res.status(400).json({
