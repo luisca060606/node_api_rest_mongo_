@@ -112,7 +112,7 @@ router.post('/login', async(req, res) => {
 
 // routes ui backend with handlebars engine template
 router.get('/users/signup', renderSignUpForm);
-router.post('/users/signup', signUp);
+router.post('/users/signup', upload.single('image'), signUp);
 router.get('/users/signin', renderSignInForm);
 router.post('/users/signin', signIn);
 router.get('/users/logout', logOut);
