@@ -1,4 +1,8 @@
 .env
+.eslintrc
+.prettierrc
+eslint.config.mjs
 
 node_modules/
 mongo/
+coverage/

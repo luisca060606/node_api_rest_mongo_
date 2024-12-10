@@ -1,3 +1,3 @@
-const bookCtrl = {}
+const bookCtrl = {};
 
 module.exports = bookCtrl;
