@@ -21,7 +21,7 @@ module.exports.connect = async ({ uri }) => {
 };
 
 module.exports.closeDb = async () => {
-  await mongoose.disconnect();
+  await mongoose.connection.close();
 
   if (process.env.NODE_ENV === 'test') {
     await mongoServer.stop();

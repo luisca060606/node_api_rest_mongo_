@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../src/app');
-const { connect, getUri, closeDb } = require('../db');
+const { connect, getUri, closeDb } = require('../dbtest');
 const { Builder } = require('../builders/author.builder');
 
 beforeAll(async () => {

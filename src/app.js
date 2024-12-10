@@ -11,7 +11,6 @@ const { config } = require('dotenv');
 const path = require('path');
 const passport = require('passport');
 require('./config/passport');
-const { connect, getUri } = require('../db');
 
 config();
 
@@ -70,12 +69,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public', express.static(path.join(__dirname + '/storage/images')));
 
 // Connect db mongo
-mongoose.connect(process.env.MONGO_URL, { dbName: process.env.MONGO_DB_NAME });
+// mongoose.connect(process.env.MONGO_URL, { dbName: process.env.MONGO_DB_NAME });
 // (async () => {
 //   const uri = await getUri();
 //   await connect({ uri });
 // })();
-const db = mongoose.connection;
+// const db = mongoose.connection;
 
 app.use('/', indexRoutes);
 app.use('/books', bookRoutes);
@@ -84,8 +83,17 @@ app.use('/users', userRoutes);
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
-  console.log(`Server run in port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server run in port ${port}`);
+// });
+
+if (require.main === module) {
+  mongoose.connect(process.env.MONGO_URL, {
+    dbName: process.env.MONGO_DB_NAME,
+  });
+  app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  });
+}
 
 module.exports = app;
