@@ -18,6 +18,8 @@ const bookRoutes = require('./routes/book.routes');
 const authorRoutes = require('./routes/author.routes');
 const indexRoutes = require('./routes/index.routes');
 const userRoutes = require('./routes/user.routes');
+const swaggerUI = require('swagger-ui-express');
+const specs = require('./swagger/swagger');
 
 // Using express for middlewares
 const app = express();
@@ -75,7 +77,7 @@ app.use('/public', express.static(path.join(__dirname + '/storage/images')));
 //   await connect({ uri });
 // })();
 // const db = mongoose.connection;
-
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 app.use('/', indexRoutes);
 app.use('/books', bookRoutes);
 app.use('/authors', authorRoutes);
