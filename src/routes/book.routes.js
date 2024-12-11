@@ -1,125 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const { Book } = require('../models/book.model');
+const {
+  getAllBooks,
+  createBook,
+  getOneBook,
+  upgradeBook,
+  upgradePartialBook,
+  deleteBook,
+} = require('../controllers/book.controller');
+const getObject = require('../middleware/middleware_objects');
+const verifyToken = require('../middleware/middleware_auth');
 
-// MIDDLEWARE
-const getBook = async (req, res, next) => {
-  let book;
-  const { id } = req.params;
-
-  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-    return res.status(404).json({
-      message: 'ID book not found',
-    });
-  }
-  try {
-    book = await Book.findById(id);
-    if (!book) {
-      return res.status(404).json({ message: 'Book not found' });
-    }
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-  res.book = book;
-  next();
-};
-
-// get all books
-router.get('/', async (req, res) => {
-  try {
-    const books = await Book.find();
-    console.log('GET ALL', books);
-    if (books.length === 0) {
-      return res.status(204).json([]);
-    }
-    res.json(books);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// create a book
-router.post('/', async (req, res) => {
-  const { title, genre, publication_date, author } = req?.body;
-  if (!title || !genre || !publication_date || !author) {
-    return res.status(400).json({
-      message: 'All fields required',
-    });
-  }
-
-  const book = new Book({
-    title,
-    genre,
-    publication_date,
-    author,
-  });
-
-  try {
-    const newBook = await book.save();
-    console.log(newBook);
-    res.status(201).json(newBook);
-  } catch (error) {
-    res.status(400).json({
-      message: error.message,
-    });
-  }
-});
-// get one
-router.get('/:id', getBook, async (req, res) => {
-  res.json(res.book);
-});
-
-// update one
-router.put('/:id', getBook, async (req, res) => {
-  try {
-    const book = res.book;
-    book.title = req.body.title || book.title;
-    book.author = req.body.author || book.author;
-    book.genre = req.body.genre || book.genre;
-    book.publication_date = req.body.publication_date || book.publication_date;
-
-    const updateBook = await book.save();
-    res.json(updateBook);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
-// update partial one
-router.patch('/:id', getBook, async (req, res) => {
-  if (
-    !req.body.title &&
-    !req.body.author &&
-    !req.body.genre &&
-    !req.body.publication_date
-  ) {
-    res.status(400).json({ message: 'Data not send' });
-  }
-  try {
-    const book = res.book;
-    book.title = req.body.title || book.title;
-    book.author = req.body.author || book.author;
-    book.genre = req.body.genre || book.genre;
-    book.publication_date = req.body.publication_date || book.publication_date;
-
-    const updateBook = await book.save();
-    res.json(updateBook);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
-// delete one
-router.delete('/:id', getBook, async (req, res) => {
-  try {
-    const book = res.book;
-    await book.deleteOne({
-      _id: book._id,
-    });
-    res.json({ message: `The book ${book.title} eliminated correctly` });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+// init endpoints api rest Books
+router.get('/', verifyToken, getAllBooks);
+router.post('/', verifyToken, createBook);
+router.get('/:id', verifyToken, getObject(Book), getOneBook);
+router.put('/:id', verifyToken, getObject(Book), upgradeBook);
+router.patch('/:id', verifyToken, getObject(Book), upgradePartialBook);
+router.delete('/:id', verifyToken, getObject(Book), deleteBook);
+// end endpoints api rest Books
 
 module.exports = router;
