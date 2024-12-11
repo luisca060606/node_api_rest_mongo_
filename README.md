@@ -9,6 +9,7 @@ Server with db mongo on docker container, using node, express, mongoose, morgan,
 
 ### Note.
 App build using Node v20.17.0
+run test with 'npm run test'
 
 ## Support 
 ### luis.ca0804@gmail.com
